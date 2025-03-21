@@ -20,8 +20,8 @@ var SupportedActions = []struct {
 	Key         string
 	Description string
 }{
-	{"action_create_event", "Create a calendar event in Google Calendar"},
-	{"action_send_email_gmail", "Send an email using Gmail API"},
+	{"action_create_event_google", "Create a calendar event in Google Calendar"},
+	{"action_send_email_google", "Send an email using google API"},
 	{"action_list_events", "List today's calendar events"},
 	{"action_undefined", "Use this when user intent doesn't match any known action"},
 }
