@@ -1,15 +1,18 @@
 package telegram
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/overcout/Inferno-AI/internal/ai"
+	"github.com/overcout/Inferno-AI/internal/config"
+	"github.com/overcout/Inferno-AI/internal/store"
 )
 
 // StartTelegramBot launches the bot and listens for updates
-func StartTelegramBot(token string, controller *ai.AIController) {
+func StartTelegramBot(token string, controller *ai.AIController, db *store.Store, cfg *config.Config) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Fatalf("Failed to start Telegram bot: %v", err)
@@ -30,13 +33,21 @@ func StartTelegramBot(token string, controller *ai.AIController) {
 
 		chatID := update.Message.Chat.ID
 
-		// Handle /start and /help commands
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
 			case "start":
 				bot.Send(tgbotapi.NewMessage(chatID, "👋 Welcome! Send me a request in natural language, and I'll help you!"))
 			case "help":
 				bot.Send(tgbotapi.NewMessage(chatID, "💡 Example: 'Create a meeting with Anna tomorrow at 3 PM for 1 hour'"))
+			case "auth":
+				userID := update.Message.From.ID
+				user, err := db.GetOrCreateUser(int64(userID))
+				if err != nil {
+					bot.Send(tgbotapi.NewMessage(chatID, "❌ Database error: "+err.Error()))
+					continue
+				}
+				link := fmt.Sprintf("%s/oauth?user_id=%d", cfg.OAuthPublicURL, user.ID)
+				bot.Send(tgbotapi.NewMessage(chatID, "🔐 Authorize your Google account:\n"+link))
 			default:
 				bot.Send(tgbotapi.NewMessage(chatID, "Unknown command. Try /help"))
 			}
@@ -59,8 +70,6 @@ func StartTelegramBot(token string, controller *ai.AIController) {
 			continue
 		}
 
-		// ✅ Use Renderable interface
-		message := result.RenderMessage()
-		bot.Send(tgbotapi.NewMessage(chatID, message))
+		bot.Send(tgbotapi.NewMessage(chatID, result.RenderMessage()))
 	}
 }

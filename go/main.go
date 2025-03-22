@@ -5,11 +5,14 @@ import (
 	"github.com/overcout/Inferno-AI/internal/ai/providers"
 	"github.com/overcout/Inferno-AI/internal/config"
 	"github.com/overcout/Inferno-AI/internal/logger"
+	"github.com/overcout/Inferno-AI/internal/oauth"
+	"github.com/overcout/Inferno-AI/internal/store"
 	"github.com/overcout/Inferno-AI/internal/telegram"
 )
 
 func main() {
 	cfg := config.LoadConfig()
+	oauth.InitOAuth(cfg)
 
 	switch cfg.LogMode {
 	case "console":
@@ -19,8 +22,25 @@ func main() {
 	}
 	logger.Info.Println("Bot started")
 
-	var controller *ai.AIController
+	// Init store (MariaDB via GORM)
+	if cfg.DBDSN == "" {
+		logger.Error.Println("DB_DSN not set")
+		return
+	}
 
+	storeInstance, err := store.NewStore(cfg.DBDSN)
+	if err != nil {
+		logger.Error.Println("Failed to connect to DB:", err)
+		return
+	}
+
+	if err := storeInstance.InitSchema(); err != nil {
+		logger.Error.Println("Failed to initialize schema:", err)
+		return
+	}
+
+	// Init AI controller
+	var controller *ai.AIController
 	switch cfg.EngineType {
 	case "ollama":
 		engine := providers.NewOllamaEngine(cfg.OllamaURL, cfg.OllamaModel)
@@ -30,8 +50,11 @@ func main() {
 		return
 	}
 
-	// 🔌 Start Telegram bot if token is present
+	// 🧠 Start OAuth server
+	go oauth.StartServer(storeInstance)
+
+	// 🤖 Start Telegram bot
 	if cfg.TelegramToken != "" {
-		telegram.StartTelegramBot(cfg.TelegramToken, controller)
+		telegram.StartTelegramBot(cfg.TelegramToken, controller, storeInstance, cfg)
 	}
 }
