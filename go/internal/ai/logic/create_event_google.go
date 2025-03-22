@@ -12,23 +12,23 @@ import (
 	"github.com/overcout/Inferno-AI/internal/logger"
 )
 
-// CreateEventCommand holds data for action_create_event_google
-type CreateEventCommand struct {
+// CreateEventGoogleCommand holds data for action_create_event_google
+type CreateEventGoogleCommand struct {
 	Action          string `json:"action"`
 	Title           string `json:"title"`
 	StartTime       string `json:"start_time"`
 	DurationMinutes int    `json:"duration_minutes"`
 }
 
-func (c *CreateEventCommand) RenderMessage() string {
+func (c *CreateEventGoogleCommand) RenderMessage() string {
 	return fmt.Sprintf(
 		"📅 Create event:\n• Title: %s\n• Start: %s\n• Duration: %d minutes",
 		c.Title, c.StartTime, c.DurationMinutes,
 	)
 }
 
-// GenerateCreateEvent parses AI response into a CreateEventCommand
-func GenerateCreateEvent(ai engine.AIEngine, userPrompt string) (*CreateEventCommand, error) {
+// GenerateCreateEventGoogle parses AI response into a CreateEventGoogleCommand
+func GenerateCreateEventGoogle(ai engine.AIEngine, userPrompt string) (*CreateEventGoogleCommand, error) {
 	logger.Info.Println("Generating action_create_event_google payload")
 
 	today := time.Now().Format("2006-01-02")
@@ -59,7 +59,7 @@ func GenerateCreateEvent(ai engine.AIEngine, userPrompt string) (*CreateEventCom
 		cleaned = matches[1]
 	}
 
-	var cmd CreateEventCommand
+	var cmd CreateEventGoogleCommand
 	if err := json.Unmarshal([]byte(cleaned), &cmd); err != nil {
 		logger.Error.Println("Invalid JSON returned by model:", cleaned)
 		return nil, errors.New("model returned invalid JSON: " + cleaned)

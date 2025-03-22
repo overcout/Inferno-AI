@@ -1,9 +1,10 @@
 package store
 
 import (
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Store struct {
@@ -19,7 +20,7 @@ func NewStore(dsn string) (*Store, error) {
 }
 
 func (s *Store) InitSchema() error {
-	err := s.DB.AutoMigrate(&User{})
+	err := s.DB.AutoMigrate(&User{}, &AuthLink{})
 	if err != nil {
 		log.Println("[ERROR] AutoMigrate failed:", err)
 	}

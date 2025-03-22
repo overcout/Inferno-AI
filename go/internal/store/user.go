@@ -8,10 +8,10 @@ import (
 )
 
 type User struct {
-	ID           int64     `gorm:"primaryKey"` // Telegram user ID
-	Email        string    `gorm:"size:255"`
-	AccessToken  string    `gorm:"type:text"`
-	RefreshToken string    `gorm:"type:text"`
+	ID           int64  `gorm:"primaryKey"` // Telegram user ID
+	Email        string `gorm:"size:255"`
+	AccessToken  string `gorm:"type:text"`
+	RefreshToken string `gorm:"type:text"`
 	TokenExpiry  time.Time
 	CreatedAt    time.Time
 }

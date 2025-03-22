@@ -9,16 +9,16 @@ import (
 
 // Config holds all configurable options for the app
 type Config struct {
-	EngineType          string
-	OllamaURL           string
-	OllamaModel         string
-	LogMode             string
-	TelegramToken       string
-	GoogleClientID      string
-	GoogleClientSecret  string
-	OAuthRedirectURL    string
-	OAuthPublicURL      string
-	DBDSN               string
+	EngineType         string
+	OllamaURL          string
+	OllamaModel        string
+	LogMode            string
+	TelegramToken      string
+	GoogleClientID     string
+	GoogleClientSecret string
+	OAuthRedirectURL   string
+	OAuthPublicURL     string
+	DBDSN              string
 }
 
 // LoadConfig parses flags, env vars, and loads .env file if present
