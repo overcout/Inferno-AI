@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/overcout/Inferno-AI/internal/ai"
@@ -45,7 +46,7 @@ func StartTelegramBot(token string, controller *ai.AIController, db *store.Store
 
 			case "auth":
 				token := tools.GenerateToken(32)
-				_, err := db.CreateAuthLink(token, int64(userID), 10*60)
+				_, err := db.CreateAuthLink(token, int64(userID), 10*time.Minute)
 				if err != nil {
 					bot.Send(tgbotapi.NewMessage(chatID, "❌ Failed to create auth link: "+err.Error()))
 					continue
