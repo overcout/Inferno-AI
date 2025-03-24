@@ -17,13 +17,13 @@ func Init() {
 		log.Fatalln("Can't open log file:", err)
 	}
 
-	Info = log.New(logFile, "[INFO] ", log.Ldate|log.Ltime)
-	Warning = log.New(logFile, "[WARN] ", log.Ldate|log.Ltime)
+	Info = log.New(logFile, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Warning = log.New(logFile, "[WARN] ", log.Ldate|log.Ltime|log.Lshortfile)
 	Error = log.New(logFile, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func InitConsole() {
-	Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime)
-	Warning = log.New(os.Stdout, "[WARN] ", log.Ldate|log.Ltime)
+	Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Warning = log.New(os.Stdout, "[WARN] ", log.Ldate|log.Ltime|log.Lshortfile)
 	Error = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 }
